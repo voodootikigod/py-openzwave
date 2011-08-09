@@ -1405,7 +1405,7 @@ use one-based group numbering).
 association group.
 @see getNumGroups, getAssociations, getMaxAssociations, addAssociation
         '''
-        self.manager.AddAssociation(homeid, nodeid, groupidx, targetnodeid)
+        self.manager.RemoveAssociation(homeid, nodeid, groupidx, targetnodeid)
 #
 # -----------------------------------------------------------------------------
 # Notifications
