@@ -1,6 +1,8 @@
 import openzwave
 from openzwave import PyManager
 
+ZWAVE_SERIAL = '/dev/ttyUSB0'
+
 options = openzwave.PyOptions()
 
 # Specify the open-zwave config path here
@@ -26,4 +28,4 @@ def callback(args):
     print('%s\n' % ('-'*20,))
 
 manager.addWatcher(callback)
-manager.addDriver('/dev/keyspan-2')
+manager.addDriver(ZWAVE_SERIAL)

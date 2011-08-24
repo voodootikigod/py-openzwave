@@ -1,0 +1,15 @@
+Index: cpp/build/linux/Makefile
+===================================================================
+--- cpp/build/linux/Makefile	(revision 312)
++++ cpp/build/linux/Makefile	(working copy)
+@@ -15,8 +15,8 @@
+ AR     := $(CROSS_COMPILE)ar rc
+ RANLIB := $(CROSS_COMPILE)ranlib
+ 
+-DEBUG_CFLAGS    := -Wall -Wno-format -Werror -g -DDEBUG -DLOG_STDERR
+-RELEASE_CFLAGS  := -Wall -Wno-unknown-pragmas -Werror -Wno-format -O3 -DNDEBUG 
++DEBUG_CFLAGS    := -fPIC -Wall -Wno-format -Werror -g -DDEBUG -DLOG_STDERR
++RELEASE_CFLAGS  := -fPIC -Wall -Wno-unknown-pragmas -Werror -Wno-format -O3 -DNDEBUG 
+ 
+ DEBUG_LDFLAGS	:= -g
+ 
