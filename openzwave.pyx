@@ -30,6 +30,9 @@ cdef extern from "Options.h" namespace "OpenZWave::Options":
 cdef extern from *:
     ctypedef char* const_notification "OpenZWave::Notification const*"
 
+cdef extern from *:
+    ctypedef char* const_char_ptr "const char*"
+
 cdef extern from "Notification.h" namespace "OpenZWave::Notification":
 
     cdef enum NotificationType:
@@ -95,6 +98,14 @@ cdef extern from "Notification.h" namespace "OpenZWave":
         uint8 GetByte()
 
 ctypedef void (*pfnOnNotification_t)(const_notification _pNotification, void* _context )
+
+cdef extern from "Log.h" namespace "OpenZWave":
+
+    cdef cppclass Log:
+        Log* Create()
+        void SetLoggingState(bint dologging)
+        bint GetLoggingState()
+        void Write(const_char_ptr _format)
 
 cdef extern from "Manager.h" namespace "OpenZWave":
 
@@ -319,6 +330,30 @@ cdef void callback(const_notification _notification, void* _context) with gil:
     addValueId(notification.GetValueID(), n)
 
     (<object>_context)(n)
+
+cdef class PyLog:
+    '''
+Cross-platform message and error logging
+    '''
+
+    cdef Log *log
+
+    def create(self):
+        'Static creation of the singleton, call this method first'
+        Create()
+
+    def SetLoggingState(self, s):
+        'Set flag to actually write to log or skip it'
+        self.log.SetLoggingState(s)
+        return
+
+    def GetLoggingState(self):
+        'Return a flag to indicate whether logging is enabled'
+        return self.log.GetLoggingState()
+
+    def Write(self, _format):
+        'Write to the log'
+        self.log.Write(_format)
 
 
 cdef class PyManager:
