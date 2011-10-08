@@ -240,7 +240,7 @@ class ZWaveWrapper(singleton.Singleton):
             if node and node._product:
                 return node._product.name
         return 'Unknown Controller'
-    
+
     def zwcallback(self, args):
         try:
             return self._zwcallback(args)
@@ -248,13 +248,14 @@ class ZWaveWrapper(singleton.Singleton):
             import sys, traceback
             print '\n'.join(traceback.format_exception(*sys.exc_info()))
             raise
-
+    
     def _zwcallback(self, args):
         '''
         Callback Handler
 
         @param args: callback dict
         '''
+
         notifyType = args['notificationType']
         self._log.debug('\n%s\n%s (node %s)\n%s', '-' * 30, notifyType, args['nodeId'], '-' * 30)
         if notifyType == 'DriverReady':

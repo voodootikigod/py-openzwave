@@ -1,10 +1,10 @@
-This is the readme file for the py-openzwave project.
-
--------------------------------------------------------------------------------
-Introduction
+py-openzwave
 ============
 
-Steps:
+What is py-openzwave?
+---------------------
+py-openzwave is a python wrapper around the open-zwave c++ project.
+This allows you to interact with z-wave networks from withing Python.
 
 1. [OpenZWave][ozw] talks to ZWave devices in your house via ZWave PC controller
 2. py-openzwave provides python bindings for [OpenZWave][ozw]
@@ -12,7 +12,28 @@ Steps:
 
   [ozw]: http://code.google.com/p/open-zwave/
 
--------------------------------------------------------------------------------
+Build instructions for Windows
+------------------------------
+In order to build py-openzwave on Windows you need MinGW, MinGW is a minimalist GNU compiler for Windows.
+You can download MinGW here: http://www.mingw.org/
+Other requirements are:
+- Cython 14.1 or higher, available from: http://www.cython.org
+- Open-zwave revision r321 or higher (r321 contains patches for MinGW)
+
+We will assume the following build structure (different structure requires changes in py-openzwave's setup.py!):
+
+\ Root folder
+-\ py-openzwave source folder
+-\ open-zwave source folder
+
+1) From the root folder, type "cd open-zwave\cpp\build\windows\mingw32"
+2) Enter "make", this will build open-zwave. If all went will you should have an "openzwave.a" file in the "open-zwave\cpp\lib\windows-mingw32" directory.
+3) From the root folder, type "cd py-openzwave"
+4) Type "python setup.py build --compiler=mingw32", this should build the py-openzwave module. If you are satisfied with the build, you can install it by running "python setup.py install"
+
+Building on Ubuntu
+------------------
+
 Download and Build
 ==================
 
@@ -66,4 +87,3 @@ from the ozcp code,
                                    web_controller_update, this, true));
 then it waits for
   `case Driver::ControllerState_Completed:`
-
