@@ -49,11 +49,13 @@ cdef extern from "Notification.h" namespace "OpenZWave::Notification":
         Type_PollingDisabled = 10
         Type_PollingEnabled = 11
         Type_DriverReady = 12
-        Type_DriverReset = 13
-        Type_MsgComplete = 14
-        Type_NodeQueriesComplete = 15
-        Type_AwakeNodesQueried = 16
-        Type_AllNodesQueried = 17
+        Type_DriverFailed = 13
+        Type_DriverReset = 14
+        Type_MsgComplete = 15
+        Type_EssentialNodeQueriesComplete = 16
+        Type_NodeQueriesComplete = 17
+        Type_AwakeNodesQueried = 18
+        Type_AllNodesQueried = 19
 
 cdef extern from "ValueID.h" namespace "OpenZWave":
 
@@ -258,12 +260,16 @@ PyNotifications = [
                          "Polling of a node has been successfully turned on by a call to Manager::EnablePoll"),
     EnumWithDoc('DriverReady').setDoc(
                          "A driver for a PC Z-Wave controller has been added and is ready to use.  The notification will contain the controller's Home ID, which is needed to call most of the Manager methods."),
+    EnumWithDoc('DriverFailed').setDoc(
+                         "Driver failed to load"),
     EnumWithDoc('DriverReset').setDoc(
                          "All nodes and values for this driver have been removed.  This is sent instead of potentially hundreds of individual node and value notifications."),
     EnumWithDoc('MsgComplete').setDoc(
                          "The last message that was sent is now complete."),
+    EnumWithDoc('EssentialNodeQueriesComplete').setDoc(
+                         "The queries on a node that are essential to its operation have been completed. The node can now handle incoming messages."),
     EnumWithDoc('NodeQueriesComplete').setDoc(
-                         "The initialisation queries on a node have been completed."),
+                         "All the initialisation queries on a node have been completed."),
     EnumWithDoc('AwakeNodesQueried').setDoc(
                          "All awake nodes have been queried, so client application can expected complete data for these nodes."),
     EnumWithDoc('AllNodesQueried').setDoc(
