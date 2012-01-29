@@ -1200,11 +1200,19 @@ if the Z-Wave message actually failed to get through.  Notification callbacks wi
                 type_string = string(value)
                 self.manager.SetValue(values_map.at(id), type_string)
                 
+    def getValueHelp(self, valueid):
+        '''
+Gets a help string describing the value's purpose and usage.
+@param valueid The unique identifier of the value.
+@return The value help text.
+        '''
+        cdef string c_string = self.manager.GetValueHelp(values_map.at(valueid))
+        return c_string.c_str()
+
 #        string GetValueLabel(ValueID& valueid)
 #        void SetValueLabel(ValueID& valueid, string value)
 #        string GetValueUnits(ValueID& valueid)
 #        void SetValueUnits(ValueID& valueid, string value)
-#        string GetValueHelp(ValueID& valueid)
 #        void SetValueHelp(ValueID& valueid, string value)
 #        uint32 GetValueMin(ValueID& valueid)
 #        uint32 GetValueMax(ValueID& valueid)
