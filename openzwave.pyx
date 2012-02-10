@@ -17,6 +17,9 @@ ctypedef int int32
 ctypedef int int16
 ctypedef unsigned char uint8
 
+cdef extern from "Defs.h":
+    ctypedef unsigned long long uint64
+
 cdef extern from "Options.h" namespace "OpenZWave":
     cdef cppclass Options:
         bint Lock()
@@ -25,7 +28,7 @@ cdef extern from "Python.h":
     void PyEval_InitThreads()
 
 cdef extern from "Options.h" namespace "OpenZWave::Options":
-    Options* Create(string a, string b, string c)
+    Options* Create(string configPath, string userPath, string commandLine)
 
 cdef extern from *:
     ctypedef char* const_notification "OpenZWave::Notification const*"
@@ -48,14 +51,18 @@ cdef extern from "Notification.h" namespace "OpenZWave::Notification":
         Type_NodeEvent = 9
         Type_PollingDisabled = 10
         Type_PollingEnabled = 11
-        Type_DriverReady = 12
-        Type_DriverFailed = 13
-        Type_DriverReset = 14
-        Type_MsgComplete = 15
-        Type_EssentialNodeQueriesComplete = 16
-        Type_NodeQueriesComplete = 17
-        Type_AwakeNodesQueried = 18
-        Type_AllNodesQueried = 19
+        Type_CreateButton = 12
+        Type_DeleteButton = 13
+        Type_ButtonOn = 14
+        Type_ButtonOff = 15
+        Type_DriverReady = 16
+        Type_DriverFailed = 17
+        Type_DriverReset = 18
+        Type_MsgComplete = 19
+        Type_EssentialNodeQueriesComplete = 20
+        Type_NodeQueriesComplete = 21
+        Type_AwakeNodesQueried = 22
+        Type_AllNodesQueried = 23
 
 cdef extern from "ValueID.h" namespace "OpenZWave":
 
@@ -86,7 +93,7 @@ cdef extern from "ValueID.h" namespace "OpenZWave":
         uint8 GetInstance()
         uint8 GetIndex()
         ValueType GetType()
-        uint32 GetId()
+        uint64 GetId()
 
 cdef extern from "Notification.h" namespace "OpenZWave":
 
@@ -104,7 +111,8 @@ ctypedef void (*pfnOnNotification_t)(const_notification _pNotification, void* _c
 cdef extern from "Log.h" namespace "OpenZWave":
 
     cdef cppclass Log:
-        Log* Create()
+        Log* Create(string filename)
+        void Destroy()
         void SetLoggingState(bint dologging)
         bint GetLoggingState()
         void Write(const_char_ptr _format)
@@ -116,7 +124,7 @@ cdef extern from "Manager.h" namespace "OpenZWave":
         void WriteConfig(uint32 homeid)
         # Options* GetOptions()
         # // Drivers
-        bint AddDriver(string serialport)
+        bint AddDriver(string controllerPath)
         bint RemoveDriver(string controllerPath)
         uint8 GetControllerNodeId(uint32 homeid)
         bint IsPrimaryController(uint32 homeid)
@@ -125,19 +133,19 @@ cdef extern from "Manager.h" namespace "OpenZWave":
         string GetLibraryVersion(uint32 homeid)
         string GetLibraryTypeName(uint32 homeid)
         # // Polling
-        uint32 GetPollInterval()
-        void SetPollInterval(uint8 seconds)
-        bint EnablePoll(ValueID& valueId)
-        bint DisablePoll(ValueID& valueId)
-        bint isPolled(ValueID& valueId)
+        int32 GetPollInterval()
+        void SetPollInterval( int32 seconds)
+        bint EnablePoll(ValueID valueId)
+        bint DisablePoll(ValueID valueId)
+        bint isPolled(ValueID valueId)
         # // Node Information
         bint RefreshNodeInfo(uint32 homeid, uint8 nodeid)
         void RequestNodeState(uint32 homeid, uint8 nodeid)
         bint IsNodeListeningDevice(uint32 homeid, uint8 nodeid)
         bint IsNodeRoutingDevice(uint32 homeid, uint8 nodeid)
+        bint IsNodeSecurityDevice(uint32 homeid, uint8 nodeid)
         uint32 GetNodeMaxBaudRate(uint32 homeid, uint8 nodeid)
         uint8 GetNodeVersion(uint32 homeid, uint8 nodeid)
-        uint8 GetNodeSecurity(uint32 homeid, uint8 nodeid)
         uint8 GetNodeBasic(uint32 homeid, uint8 nodeid)
         uint8 GetNodeGeneric(uint32 homeid, uint8 nodeid)
         uint8 GetNodeSpecific(uint32 homeid, uint8 nodeid)
@@ -169,6 +177,7 @@ cdef extern from "Manager.h" namespace "OpenZWave":
         uint32 GetValueMin(ValueID& valueid)
         uint32 GetValueMax(ValueID& valueid)
         bint IsValueReadOnly(ValueID& valueid)
+        bint IsValueWriteOnly(ValueID& valueid)
         bint IsValueSet(ValueID& valueid)
         bint GetValueAsBool(ValueID& valueid, bint* o_value)
         bint GetValueAsByte(ValueID& valueid, uint8* o_value)
@@ -177,8 +186,9 @@ cdef extern from "Manager.h" namespace "OpenZWave":
         bint GetValueAsShort(ValueID& valueid, uint32* o_value)
         bint GetValueAsString(ValueID& valueid, string* o_value)
         bint GetValueListSelection(ValueID& valueid, string* o_value)
-        bint GetValueListSelection(ValueID& valueid, uint32* o_value)
+        bint GetValueListSelection(ValueID& valueid, int32* o_value)
         #bint GetValueListItems(ValueID& valueid, vector<string>* o_value)
+        bint GetValueFloatPrecision( ValueID& valueid, uint8* o_value)
         bint SetValue(ValueID& valueid, bint value)
         bint SetValue(ValueID& valueid, uint8 value)
         bint SetValue(ValueID& valueid, float value)
@@ -192,7 +202,7 @@ cdef extern from "Manager.h" namespace "OpenZWave":
         # // Climate Control
         bint SetSwitchPoint(ValueID& valueid, uint8 hours, uint8 minutes, uint8 setback)
         bint RemoveSwitchPoint(ValueID& valueid, uint8 hours, uint8 minutes)
-        bint ClearSwitchPoints(ValueID& valueid)
+        void ClearSwitchPoints(ValueID& valueid)
         bint GetSwitchPoint(ValueID& valueid, uint8 idx, uint8* o_hours, uint8* o_minutes, uint8* o_setback)
         # // SwitchAll
         void SwitchAllOn(uint32 homeid)
@@ -258,6 +268,14 @@ PyNotifications = [
                          "Polling of a node has been successfully turned off by a call to Manager::DisablePoll"),
     EnumWithDoc('PollingEnabled').setDoc(
                          "Polling of a node has been successfully turned on by a call to Manager::EnablePoll"),
+    EnumWithDoc('CreateButton').setDoc(
+                         ""),
+    EnumWithDoc('DeleteButton').setDoc(
+                         ""),
+    EnumWithDoc('ButtonOn').setDoc(
+                         ""),
+    EnumWithDoc('ButtonOff').setDoc(
+                         ""),
     EnumWithDoc('DriverReady').setDoc(
                          "A driver for a PC Z-Wave controller has been added and is ready to use.  The notification will contain the controller's Home ID, which is needed to call most of the Manager methods."),
     EnumWithDoc('DriverFailed').setDoc(
@@ -783,16 +801,6 @@ Get the version number of a node
 @return the node version number
         '''
         return self.manager.GetNodeVersion(homeid, nodeid)
-
-    def getNodeSecurity(self, homeid, nodeid):
-        '''
-Get the security byte for a node.  Bit meanings are still to be determined.
-
-@param homeId The Home ID of the Z-Wave controller that manages the node.
-@param nodeId The ID of the node to query.
-@return the node security byte
-        '''
-        return self.manager.GetNodeSecurity(homeid, nodeid)
 
     def getNodeBasic(self, homeid, nodeid):
         '''
