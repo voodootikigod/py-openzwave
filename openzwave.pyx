@@ -140,7 +140,7 @@ cdef extern from "Manager.h" namespace "OpenZWave":
         bint isPolled(ValueID valueId)
         # // Node Information
         bint RefreshNodeInfo(uint32 homeid, uint8 nodeid)
-        void RequestNodeState(uint32 homeid, uint8 nodeid)
+        bint RequestNodeState(uint32 homeid, uint8 nodeid)
         bint IsNodeListeningDevice(uint32 homeid, uint8 nodeid)
         bint IsNodeRoutingDevice(uint32 homeid, uint8 nodeid)
         bint IsNodeSecurityDevice(uint32 homeid, uint8 nodeid)
@@ -223,7 +223,7 @@ cdef extern from "Manager.h" namespace "OpenZWave":
         # // Controller Commands
         void ResetController(uint32 homeid)
         void SoftReset(uint32 homeid)
-        #bint BeginControllerCommand(uint32 homeid, Driver::ControllerCommand _command, Driver::pfnControllerCallback_t _callback = NULL, void* _context = NULL, bool _highPower = false, uint8 _nodeId = 0xff )
+        #bint BeginControllerCommand(uint32 homeid, Driver::ControllerCommand _command, Driver::pfnControllerCallback_t _callback = NULL, void* _context = NULL, bool _highPower = false, uint8 _nodeId = 0xff, uint8 arg = 0 )
         bint CancelControllerCommand(uint32 homeid)
 
 cdef extern from "Manager.h" namespace "OpenZWave::Manager":
@@ -313,7 +313,7 @@ PyValueTypes = [
     EnumWithDoc('Button').setDoc(   "A write-only value that is the equivalent of pressing a button to send a command to a device"),
     ]
 
-cdef map[uint32, ValueID] values_map 
+cdef map[uint64, ValueID] values_map 
 
 cdef addValueId(ValueID v, n):
     cdef string value
@@ -342,7 +342,7 @@ cdef addValueId(ValueID v, n):
                     'readOnly': manager.IsValueReadOnly(v),
                     }   
     
-    values_map.insert ( pair[uint32, ValueID] (v.GetId(), v)) 
+    values_map.insert ( pair[uint64, ValueID] (v.GetId(), v)) 
 
 cdef void callback(const_notification _notification, void* _context) with gil:
     cdef Notification* notification = <Notification*>_notification
@@ -760,7 +760,7 @@ Causes the nodes values to be requested from the Z-Wave network.
 @param homeId The Home ID of the Z-Wave controller that manages the node.
 @param nodeId The ID of the node to query.
         '''
-        self.manager.RequestNodeState(homeid, nodeid)
+        return self.manager.RequestNodeState(homeid, nodeid)
 
     def isNodeListeningDevice(self, homeid, nodeid):
         '''
