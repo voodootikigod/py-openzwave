@@ -42,27 +42,29 @@ cdef extern from "Notification.h" namespace "OpenZWave::Notification":
         Type_ValueAdded = 0
         Type_ValueRemoved = 1
         Type_ValueChanged = 2
-        Type_Group = 3
-        Type_NodeNew = 4
-        Type_NodeAdded = 5
-        Type_NodeRemoved = 6
-        Type_NodeProtocolInfo = 7
-        Type_NodeNaming = 8
-        Type_NodeEvent = 9
-        Type_PollingDisabled = 10
-        Type_PollingEnabled = 11
-        Type_CreateButton = 12
-        Type_DeleteButton = 13
-        Type_ButtonOn = 14
-        Type_ButtonOff = 15
-        Type_DriverReady = 16
-        Type_DriverFailed = 17
-        Type_DriverReset = 18
-        Type_MsgComplete = 19
-        Type_EssentialNodeQueriesComplete = 20
-        Type_NodeQueriesComplete = 21
-        Type_AwakeNodesQueried = 22
-        Type_AllNodesQueried = 23
+        Type_ValueRefreshed = 3
+        Type_Group = 4
+        Type_NodeNew = 5
+        Type_NodeAdded = 6
+        Type_NodeRemoved = 7
+        Type_NodeProtocolInfo = 8
+        Type_NodeNaming = 9
+        Type_NodeEvent = 10
+        Type_PollingDisabled = 11
+        Type_PollingEnabled = 12
+        Type_CreateButton = 13
+        Type_DeleteButton = 14
+        Type_ButtonOn = 15
+        Type_ButtonOff = 16
+        Type_DriverReady = 17
+        Type_DriverFailed = 18
+        Type_DriverReset = 19
+        Type_MsgComplete = 20
+        Type_EssentialNodeQueriesComplete = 21
+        Type_NodeQueriesComplete = 22
+        Type_AwakeNodesQueried = 23
+        Type_AllNodesQueried = 24
+        Type_LogWritten = 25
 
 cdef extern from "ValueID.h" namespace "OpenZWave":
 
@@ -249,6 +251,8 @@ PyNotifications = [
     EnumWithDoc('ValueRemoved').setDoc(
                          "A node value has been removed from OpenZWave's list.  This only occurs when a node is removed."),
     EnumWithDoc('ValueChanged').setDoc(
+                         "A node value has been updated from the Z-Wave network and it is different from the previous value."),
+    EnumWithDoc('ValueRefreshed').setDoc(
                          "A node value has been updated from the Z-Wave network."),
     EnumWithDoc('Group').setDoc(
                          "The associations for the node have changed. The application should rebuild any group information it holds about the node."),
@@ -292,6 +296,8 @@ PyNotifications = [
                          "All awake nodes have been queried, so client application can expected complete data for these nodes."),
     EnumWithDoc('AllNodesQueried').setDoc(
                          "All nodes have been queried, so client application can expected complete data."),
+    EnumWithDoc('LogWritten').setDoc(
+                         "A line has been written to the OpenZWave log."),
     ]
 
 PyGenres = [
